@@ -1,9 +1,11 @@
-import pathlib
-import numpy as np
 import sys
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import torch
+import torch.nn as nn
+from torch.utils.data import Dataset
+from diagnosis import mean_rank, calc_spearman_cor
 
 #---
 # "numerai_datasets"フォルダからtrain/tournament用csvファイルを読み込み
@@ -16,7 +18,7 @@ def make_traintest_data(root_path):
     train_data = pd.read_csv(train_data_path)
     test_data = pd.read_csv(test_data_path)
     feature_names = [f for f in train_data.columns if "feature" in f]
-    return train_data, test_data, feature_names
+    return train_data, test_data, future_names
 
 #---
 # era毎にサンプルサイズを描画
@@ -42,4 +44,36 @@ def count_samplesize_by_era(df, figsize=(15,5)):
     plt.show()
     
     return samplesize_list
+
+
+#---
+# targetとの順位相関が閾値よりも大きい特徴量を抽出
+#---
+
+def choose_features(df, feature_names, threshold=0.005):
+    highcorr_features = []
+    target = df['target'].values
+    features = df[feature_names].values
+    corr_arr = np.apply_along_axis(calc_spearman_corr, axis=0, 
+                                   arr=features, y=target)
+    highcorr_idx = np.where(corr_arr > threshold)
+    highcorr_arr = corr_arr[highcorr_idx]
+    return highcorr_idx, highcorr_arr
+
+#---
+# テーブル形式のデータセット
+#---
+
+class dfDataset(Dataset):
+    def __init__(self, Xs, ts):
+        self.Xs = Xs
+        self.ts = ts
+        
+    def __len__(self):
+        return len(self.Xs)
+    
+    def __getitem__(self, index):
+        x = torch.from_numpy(self.xs[index,:].astype(np.float32))
+        t = torch.from_numpy(self.ts[index,:].astype(np.float32))
+        return x, t
 
