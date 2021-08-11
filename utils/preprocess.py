@@ -11,14 +11,14 @@ from diagnosis import mean_rank, calc_spearman_cor
 # "numerai_datasets"フォルダからtrain/tournament用csvファイルを読み込み
 #---
 
-def make_traintest_data(root_path):
-    numerai_dataset_path = root_path / 'numerai_datasets'
+def make_traintest_data(root_path, folder_name='numerai_datasets):
+    numerai_dataset_path = root_path / folder_name
     train_data_path = numerai_dataset_path / 'numerai_training_data.csv'
     test_data_path = numerai_dataset_path / 'numerai_tournament_data.csv'
     train_data = pd.read_csv(train_data_path)
     test_data = pd.read_csv(test_data_path)
     feature_names = [f for f in train_data.columns if "feature" in f]
-    return train_data, test_data, future_names
+    return train_data, test_data, feature_names
 
 #---
 # era毎にサンプルサイズを描画
@@ -61,7 +61,7 @@ def choose_features(df, feature_names, threshold=0.005):
     return highcorr_idx, highcorr_arr
 
 #---
-# テーブル形式のデータセット
+# テーブル形式のデータセットutils
 #---
 
 class dfDataset(Dataset):
