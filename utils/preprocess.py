@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
-from diagnosis import mean_rank, calc_spearman_cor
+from utils.diagnosis import mean_rank, calc_spearman_corr
 
 #---
 # "numerai_datasets"フォルダからtrain/tournament用csvファイルを読み込み
 #---
 
-def make_traintest_data(root_path, folder_name='numerai_datasets):
+def make_traintest_data(root_path, folder_name='numerai_datasets'):
     numerai_dataset_path = root_path / folder_name
     train_data_path = numerai_dataset_path / 'numerai_training_data.csv'
     test_data_path = numerai_dataset_path / 'numerai_tournament_data.csv'
