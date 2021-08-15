@@ -66,9 +66,10 @@ def choose_features(df, feature_names, threshold=0.005):
 #---
 
 class dfDataset(Dataset):
-    def __init__(self, Xs, ts):
+    def __init__(self, Xs, ts, transforms=None):
         self.Xs = Xs
         self.ts = ts
+        self.transforms = transforms
         
     def __len__(self):
         return len(self.Xs)
@@ -76,5 +77,6 @@ class dfDataset(Dataset):
     def __getitem__(self, index):
         x = torch.from_numpy(self.xs[index,:].astype(np.float32))
         t = torch.from_numpy(self.ts[index,:].astype(np.float32))
+        if self.transforms is not None:
+            x, t = self.transforms(x,t)
         return x, t
-
