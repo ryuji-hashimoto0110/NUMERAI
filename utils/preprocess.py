@@ -15,10 +15,11 @@ def make_traintest_data(root_path, folder_name='numerai_datasets'):
     numerai_dataset_path = root_path / folder_name
     train_data_path = numerai_dataset_path / 'numerai_training_data.csv'
     test_data_path = numerai_dataset_path / 'numerai_tournament_data.csv'
-    train_data = pd.read_csv(train_data_path)
-    test_data = pd.read_csv(test_data_path)
+    train_data = pd.read_csv(train_data_path).set_index('id')
+    test_data = pd.read_csv(test_data_path).set_index('id')
     feature_names = [f for f in train_data.columns if "feature" in f]
-    return train_data, test_data, feature_names
+    test_id = list(test_data.index)
+    return train_data, test_data, feature_names, test_id
 
 #---
 # era毎にサンプルサイズを描画
